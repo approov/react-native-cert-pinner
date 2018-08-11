@@ -1,0 +1,5 @@
+rootProject.name = 'example'
+include ':react-native-cert-pinner'
+project(':react-native-cert-pinner').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-cert-pinner/android')
+
+include ':app'

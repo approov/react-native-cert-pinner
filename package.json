@@ -1,18 +1,46 @@
 
 {
   "name": "react-native-cert-pinner",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.3.0",
+  "description": "For React Native, pins TLS connections to specific trusted certificates' public keys",
+  "author": {
+    "name": "SKip Hovsmith",
+    "email": "skiph@criticalblue.com"
+  },
+  "license": "Apache-2.0",
+  "licenseFilename": "LICENSE",
+  "keywords": [
+    "react-native", "ios", "android", "fetch", "certificate-pinning", "tls", "https"
+  ],
+ 
   "main": "index.js",
+  "// bin": {
+    "pinset": "./cli/pinset.js"
+  },  
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [
-    "react-native"
-  ],
-  "author": "",
-  "license": "",
+  "dependencies": {
+    "minimist": "^1.2.0"
+  },
   "peerDependencies": {
-    "react-native": "^0.41.2"
+    "react-native": ">=0.41.2"
+  },
+  
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/approov/react-native-cert-pinner.git",
+    "baseUrl": "https://github.com/approov/react-native-cert-pinner"
+  },
+  "readmeFilename": "README.md",
+  "homepage": "https://github.com/approov/react-native-cert-pinner#readme",
+  "bugs": {
+    "url": "https://github.com/approov/react-native-cert-pinner/issues"
+  },
+  
+  "// rnpm": {
+    "commands": {
+      "postlink": "./node_modules/react-native-cert-pinner/bin/checklink"
+    }
   }
 }
