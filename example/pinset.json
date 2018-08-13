@@ -1,14 +1,10 @@
 {
-    "domains": {
-        "*.approovr.io" : {
-            "pins": [
-                "sha256/8rwX90Ej3Ttt8RRkrg+WYDS9n7IS03bk5bjP/UXPtaY8=",
-                "sha256/oq+Uj+2TYMg13txh1pXW0/VLAkonU3TnoPr5hfxPZVc="
-            ],
-            "good pins": [
-                "sha256/oq+Uj+2TYMg13txh1pXW0/VLAkonU3TnoPr5hfxPZVc=",
-                "sha256/8Rw90Ej3Ttt8RRkrg+WYDS9n7IS03bk5bjP/UXPtaY8="
-            ]
-        }
+  "domains": {
+    "*.approovr.io": {
+      "pins": [
+        "sha256/oq+Uj+2TYMg13txh1pXW0/VLAkonU3TnoPr5hfxPZVc=",
+        "sha256/8Rw90Ej3Ttt8RRkrg+WYDS9n7IS03bk5bjP/UXPtaY8="
+      ]
     }
+  }
 }
