@@ -25,7 +25,6 @@ public class PinnedClientFactory implements OkHttpClientFactory {
                 .cookieJar(new ReactCookieJarContainer());
 
         if (certificatePinner != null) {
-            android.util.Log.i("PinnedClientFactory", "setting critical cert pinner");
             client.certificatePinner(certificatePinner);
         }
         
@@ -35,4 +34,3 @@ public class PinnedClientFactory implements OkHttpClientFactory {
 }
 
 // end of file
-
