@@ -28,6 +28,7 @@ public class PinnedClientFactory implements OkHttpClientFactory {
             android.util.Log.i("PinnedClientFactory", "setting critical cert pinner");
             client.certificatePinner(certificatePinner);
         }
+        
 
         return OkHttpClientProvider.enableTls12OnPreLollipop(client).build();
     }

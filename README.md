@@ -38,7 +38,7 @@ Unlike typical installed packages, there is no need to require any modules in th
 
 A `pinset` utility is provided to help configure the native mdoules for pinning.
 
-The default setup assumes you are running in your project's home directory. The default configuration file is `./pinset.json`, and the default native android project is assumed to be located at `./android`. Both these locations may be overriden on teh command line.
+The default setup assumes you are running in your project's home directory. The default configuration file is `./pinset.json`, and the default native android project is assumed to be located at `./android`. Both these locations may be overriden on the command line.
 
 #### Command Help
 
@@ -103,14 +103,14 @@ Enter the desired public key hashes into the `pinset.conf` file:
 }
 ```
 
-It is recommended to select multiple hashes with at least one of them being from an internediate certificate.
+It is recommended to select multiple hashes with at least one of them being from an intermediate certificate.
 
 #### Generation
 
 Once the configuration is set, generate the native project sources:
 
 ```
-$ ../cli/pinset.js gen
+$ npx pinset gen
 Reading config file './pinset.json'.
 Writing java file './android/app/src/main/java/com/criticalblue/reactnative/GeneratedCertificatePinner.java'.
 ```
@@ -123,9 +123,9 @@ $ react-native run-android
 
 #### Updates
 
-To update the certificate pins, edit the configuration file, regenerate the native sources, and rebuild teh app.
+To update the certificate pins, edit the configuration file, regenerate the native sources, and rebuild the app.
 
-Note, there is no way to update the pin sets from javascript at runtime.
+Note, there is no way to update the pin sets from javascript while the app is running.
 
 ### Certificate Security
 
@@ -145,5 +145,6 @@ To ignore the default files in a git repository, add to `.gitignore`:
 
 - Add iOS support.
 - Automatically regenerate native source files whenever the pin set configuration changes.
+- Add source regeneration and git ignores to the mostly automatic react-native linking step.
 - Add certificate lookup to the `pinset` utility.
-- Add automatic regeneration and git ignores to the automatic react-native linking flow.
+- Better secure pinset information within the app.
