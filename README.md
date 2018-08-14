@@ -36,7 +36,7 @@ Unlike typical installed packages, there is no need to require any modules in th
 
 ### Certificate Pinning Configuration
 
-A `pinset` utility is provided to help configure the native mdoules for pinning.
+A `pinset` utility is provided to help configure the native modules for pinning.
 
 The default setup assumes you are running in your project's home directory. The default configuration file is `./pinset.json`, and the default native android project is assumed to be located at `./android`. Both these locations may be overriden on the command line.
 
