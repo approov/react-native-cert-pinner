@@ -15,7 +15,7 @@ Currently this package manages certificate pinning in react-native for Android o
 
 #### Android
 
-1. Open up `android/app/src/main/java/[...]/MainActivity.java`
+1. Open up `android/app/src/main/java/[...]/MainApplication.java`
   - Add `import com.criticalblue.reactnative.CertPinnerPackage;` to the imports at the top of the file
   - Add `new CertPinnerPackage()` to the list returned by the `getPackages()` method
 2. Append the following lines to `android/settings.gradle`:
@@ -82,7 +82,7 @@ This command will not overwrite an existing configuartion file unless the `--for
 
 Next, determine which URLs you want to pin, and determine each certificate's public key hash. A convenient utility is provided by __Report URI__ at [https://report-uri.com/home/pkp_hash](https://report-uri.com/home/pkp_hash). Enter a URL to see the current chain of certificate hashes.
 
-Enter the desired public key hashes into the `pinset.conf` file:
+Enter the desired public key hashes into the `pinset.json` file:
 
 ```json
 {
