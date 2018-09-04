@@ -40,8 +40,9 @@
 	<false/>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
+	<key>LSApplicationCategoryType</key>
+	<string></string>
 	<key>NSAppTransportSecurity</key>
-	<!--See http://ste.vn/2015/06/10/configuring-app-transport-security-ios-9-osx-10-11/ -->
 	<dict>
 		<key>NSExceptionDomains</key>
 		<dict>
@@ -49,6 +50,37 @@
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
+			</dict>
+		</dict>
+	</dict>
+
+	<key>TSKConfiguration</key>
+	<dict>
+		<key>TSKSwizzleNetworkDelegates</key>
+		<true/>
+		<key>TSKPinnedDomains</key>
+		<dict>
+			<key>approovr.io</key>
+			<dict>
+				<key>TSKReportUris</key>
+				<array>
+					<string>https://www.test-report.com</string>
+				</array>
+				<key>TSKEnforcePinning</key>
+				<true/>
+				<key>TSKIncludeSubdomains</key>
+				<true/>
+				<key>TSKPublicKeyAlgorithms</key>
+					<array>
+						<string>TSKAlgorithmRsa2048</string>
+					</array>
+				<key>TSKPublicKeyHashes</key>
+				<array>
+					<string>oq+Uj+2TYMg13txh1pXW0/VLAkonU3TnoPr5hfxPZVc=</string>
+					<string>8Rw90Ej3Ttt8RRkrg+WYDS9n7IS03bk5bjP/UXPtaY8=</string>
+					<string>0000000000000000000000000000000000000000000=</string>
+					<string>1111111111111111111111111111111111111111111=</string>
+				</array>
 			</dict>
 		</dict>
 	</dict>
