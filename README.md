@@ -1,7 +1,7 @@
 
 # react-native-cert-pinner
 
-Currently this package manages certificate pinning in react-native for Android only. Equivalent support for iOS is pending. 
+This package manages TLS certificate pinning in react-native for Android and iOS.
 
 ## Getting started
 
