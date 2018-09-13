@@ -17,8 +17,7 @@ Pod::Spec.new do |s|
 
 
   s.dependency "React"
-  #s.dependency "others"
+  s.dependency "TrustKit"
+  # add other dependencies here
 
 end
-
-  

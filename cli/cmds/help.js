@@ -21,7 +21,8 @@ const menus = {
   gen: `
     pinset gen [options] [config] 
 
-      --android, -a <path> .. path to android project (defaults to './android')
+      --android, -a <path> .. path to Android project (defaults to './android')
+      --ios, -i <path> ...... path to iOS project (defaults to './ios')
       --force, -f ........... always overwrite existing configuration
     
       config ................ configuration file - defaults to 'pinset.json'

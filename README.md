@@ -13,6 +13,16 @@ Currently this package manages certificate pinning in react-native for Android o
 
 ### Manual installation
 
+#### iOS
+
+Add the following line to the project targets in your `Podfile`:
+
+```
+pod 'TrustKit', '~> 1.4.2'
+```
+
+Then run pod install.
+
 #### Android
 
 1. Open up `android/app/src/main/java/[...]/MainApplication.java`
@@ -62,7 +72,8 @@ $ npx pinset help gen
 
     pinset gen [options] [config]
 
-      --android, -a <path> .. path to android project (defaults to './android')
+      --android, -a <path> .. path to Android project (defaults to './android')
+      --ios, -i <path> ...... path to iOS project (defaults to './ios')
       --force, -f ........... always overwrite existing configuration
 
       config ................ configuration file - defaults to 'pinset.json'
@@ -76,7 +87,7 @@ The first step is to generate a starter configuration:
 $ npx pinset init
 ```
 
-This command will not overwrite an existing configuartion file unless the `--force` flag is used.
+This command will not overwrite an existing configuration file unless the `--force` flag is used.
 
 #### Lookup
 
@@ -103,6 +114,8 @@ Enter the desired public key hashes into the `pinset.json` file:
 }
 ```
 
+Domains starting with`*.` will include all subdomains.
+
 It is recommended to select multiple hashes with at least one of them being from an intermediate certificate.
 
 #### Generation
@@ -112,13 +125,14 @@ Once the configuration is set, generate the native project sources:
 ```
 $ npx pinset gen
 Reading config file './pinset.json'.
-Writing java file './android/app/src/main/java/com/criticalblue/reactnative/GeneratedCertificatePinner.java'.
+Updating java file './android/app/src/main/java/com/criticalblue/reactnative/GeneratedCertificatePinner.java'.
+Updating plist file './ios/example/info.plist'.
 ```
 
 Build and run the react-native app, for example:
 
 ```
-$ react-native run-android
+$ react-native run-ios
 ```
 
 #### Updates
@@ -139,11 +153,11 @@ To ignore the default files in a git repository, add to `.gitignore`:
 
 # default generated android source
 ./android/app/src/main/java/com/criticalblue/reactnative/GeneratedCertificatePinner.java
+./ios/<your project here>/info.plist
 ```
 
 ## Future Enhancements
 
-- Add iOS support.
 - Automatically regenerate native source files whenever the pin set configuration changes.
 - Add source regeneration and git ignores to the mostly automatic react-native linking step.
 - Add certificate lookup to the `pinset` utility.

@@ -5,8 +5,8 @@ const Log = require('./Log');
 
 const args = minimist(process.argv.slice(2), {
   boolean: [ 'help', 'version', 'check', 'force' ],
-  string: [ 'android'],
-  alias: { h: 'help', v: 'version', f: 'force', a: 'android' }
+  string: [ 'android', 'ios' ],
+  alias: { h: 'help', v: 'version', f: 'force', a: 'android', i: 'ios' }
 });
 
 let cmd = args._[0] || 'help'
