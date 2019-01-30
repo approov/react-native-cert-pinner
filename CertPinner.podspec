@@ -1,0 +1,1 @@
+ios/CertPinner.podspec
