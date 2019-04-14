@@ -1,4 +1,3 @@
-
 # react-native-cert-pinner
 
 This package manages TLS certificate pinning in react-native for Android and iOS.
@@ -23,20 +22,24 @@ pod 'TrustKit', '~> 1.4.2'
 
 Then run pod install.
 
+**NOTE:** For multiple ios projects; Do not forget configure podfile accordingly.
+
 #### Android
 
 1. Open up `android/app/src/main/java/[...]/MainApplication.java`
-  - Add `import com.criticalblue.reactnative.CertPinnerPackage;` to the imports at the top of the file
-  - Add `new CertPinnerPackage()` to the list returned by the `getPackages()` method
+
+- Add `import com.criticalblue.reactnative.CertPinnerPackage;` to the imports at the top of the file
+- Add `new CertPinnerPackage()` to the list returned by the `getPackages()` method
+
 2. Append the following lines to `android/settings.gradle`:
-  	```
-  	include ':react-native-cert-pinner'
-  	project(':react-native-cert-pinner').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-cert-pinner/android')
-  	``` 
+   ```
+   include ':react-native-cert-pinner'
+   project(':react-native-cert-pinner').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-cert-pinner/android')
+   ```
 3. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
-  	```
-      compile project(':react-native-cert-pinner')
-  	```
+   ```
+     compile project(':react-native-cert-pinner')
+   ```
 
 ## Usage
 
@@ -72,11 +75,27 @@ $ npx pinset help gen
 
     pinset gen [options] [config]
 
-      --android, -a <path> .. path to Android project (defaults to './android')
-      --ios, -i <path> ...... path to iOS project (defaults to './ios')
-      --force, -f ........... always overwrite existing configuration
+      --android, -a <path> ................... Android project folder (defaults to './android')
+      --ios, -i <path> ....................... iOS projects folder (defaults to './ios')
+      --project, -p <xcodeproj name> | all ... update specific iOS project(s). It can be used multiple times
+      --force, -f ............................ always overwrite existing configuration
 
-      config ................ configuration file - defaults to 'pinset.json'
+      config ................................. configuration file - defaults to 'pinset.json'
+
+      Examples:
+      --------------------------------------------
+      Custom paths
+        pinset gen -a my-app/android -i my-app/ios
+
+      Multiple iOS projects in same folder
+        Updates only myapp
+          pinset gen -p myapp.xcodeproj
+
+        Updates myapp and myStagingApp
+          pinset gen -p myapp -p myStagingApp
+
+        Updates all xcode projects in folder
+          pinset gen -p all
 ```
 
 #### Initialization
@@ -91,7 +110,7 @@ This command will not overwrite an existing configuration file unless the `--for
 
 #### Lookup
 
-Next, determine which URLs you want to pin, and determine each certificate's public key hash. A convenient utility is provided by __Report URI__ at [https://report-uri.com/home/pkp_hash](https://report-uri.com/home/pkp_hash). Enter a URL to see the current chain of certificate hashes.
+Next, determine which URLs you want to pin, and determine each certificate's public key hash. A convenient utility is provided by **Report URI** at [https://report-uri.com/home/pkp_hash](https://report-uri.com/home/pkp_hash). Enter a URL to see the current chain of certificate hashes.
 
 Enter the desired public key hashes into the `pinset.json` file:
 
