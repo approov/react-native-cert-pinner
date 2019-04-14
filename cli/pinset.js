@@ -4,22 +4,29 @@ const minimist = require('minimist');
 const Log = require('./Log');
 
 const args = minimist(process.argv.slice(2), {
-  boolean: [ 'help', 'version', 'check', 'force' ],
-  string: [ 'android', 'ios' ],
-  alias: { h: 'help', v: 'version', f: 'force', a: 'android', i: 'ios' }
+  boolean: ['help', 'version', 'check', 'force'],
+  string: ['android', 'ios', 'project'],
+  alias: {
+    h: 'help',
+    v: 'version',
+    f: 'force',
+    a: 'android',
+    i: 'ios',
+    p: 'project'
+  }
 });
 
-let cmd = args._[0] || 'help'
+let cmd = args._[0] || 'help';
 
 if (args.version || args.v) {
-  cmd = 'version'
+  cmd = 'version';
 }
 
 if (args.help || args.h) {
-  cmd = 'help'
+  cmd = 'help';
 }
 
-//console.log(args);
+// console.log(args);
 
 switch (cmd) {
   case 'init':
