@@ -1,6 +1,6 @@
 {
   "name": "react-native-cert-pinner",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "For React Native, pins TLS connections to specific trusted certificates' public keys",
   "author": {
     "name": "SKip Hovsmith",
@@ -26,21 +26,21 @@
   },
   "dependencies": {
     "chalk": "^2.4.1",
-    "minimist": "^1.2.0",
-    "plist": "^3.0.1"
+    "minimist": "^1.2.5",
+    "plist": "^3.0.2"
   },
   "peerDependencies": {
-    "react-native": ">=0.41.2"
+    "react-native": ">=0.61.2"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/approov/react-native-cert-pinner.git",
-    "baseUrl": "https://github.com/approov/react-native-cert-pinner"
+    "url": "git+https://github.com/arifaydogmus/react-native-cert-pinner.git",
+    "baseUrl": "https://github.com/arifaydogmus/react-native-cert-pinner"
   },
   "readmeFilename": "README.md",
-  "homepage": "https://github.com/approov/react-native-cert-pinner#readme",
+  "homepage": "https://github.com/arifaydogmus/react-native-cert-pinner#readme",
   "bugs": {
-    "url": "https://github.com/approov/react-native-cert-pinner/issues"
+    "url": "https://github.com/arifaydogmus/react-native-cert-pinner/issues"
   },
   "// rnpm": {
     "commands": {

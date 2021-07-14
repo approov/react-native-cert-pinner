@@ -9,8 +9,8 @@ Pod::Spec.new do |s|
 
   s.authors      = package['author']
   s.homepage     = package['repository']['url']
-  s.platform     = :ios, "9.0"
-  s.ios.deployment_target = '9.0'
+  s.platform     = :ios, "12.1"
+  s.ios.deployment_target = '12.1'
   s.source       = { :git => "https://github.com/arifaydogmus/react-native-cert-pinner.git", :tag => "master" }
   s.source_files  = "CertPinner/**/*.{h,m}"
   s.requires_arc = true
