@@ -1,6 +1,8 @@
 # react-native-cert-pinner
 
-> **IMPORTANT:** This repository relates to Approov 1 and has not been updated to reflect the [new features](https://approov.io/docs/v2.0/changelog/) and [usage](https://approov.io/docs/v2.0/approov-usage-documentation/) of [Approov 2](https://approov.io/docs/v2.0/approov-installation/), the latest version of Approov. We will be updating the repository soon. Meanwhile, please refer to the [guide](https://approov.io/docs/v2.0/approov-usage-documentation/#migrating-from-approov-1) for migrating from Approov 1 to Approov 2.
+**This package is now ARCHIVED. Approov users should use instead the [Approov React Native](https://github.com/approov/quickstart-react-native) quickstart, while non Approov users can use the Approov free tool: [Mobile Certificate Pinning Generator](https://approov.io/tools/static-pinning).**
+
+> **IMPORTANT:** This repository relates to Approov 1 and has not been updated to reflect the [new features](https://approov.io/docs/latest/changelog/) and [usage](https://approov.io/docs/latest/approov-usage-documentation/) for the latest version of [Approov](https://approov.io/docs/latest/approov-installation/). Contact the Approov [support](https://approov.io/contact) If you were using this package with Approov 1 and you need help to migrate to the latest Approov version.
 
 This package manages TLS certificate pinning in react-native for Android and iOS.
 
