@@ -4,178 +4,200 @@ var plist = require('plist');
 
 const Log = require('../Log');
 
-const andHead = 
-`package com.criticalblue.reactnative;
+const isValidDomain = (domain) => {
+  var pattern = new RegExp(
+    /^((?:(?:(?:\w[\.\-\+]?)*)\w)+)((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/
+  );
+  return pattern.test(domain);
+};
+
+const getIOSProjectPath = (baseDir, projectName) =>
+  `${baseDir}/${path.basename(projectName, '.xcodeproj')}/info.plist`;
+
+const compareFilesLastModified = (source, destination, isForced) => {
+  // No need to check source file is exists or not. It is already checked.
+  if (!fs.existsSync(destination)) {
+    Log.fatal(`Destination project file is not exists.  (${destination})`);
+  }
+
+  if (!isForced && fs.statSync(source).mtimeMs < fs.statSync(destination).mtimeMs) {
+    Log.fatal(
+      `Config file '${source}' is older than destination file '${destination}'; use '-f' to force update.`
+    );
+  }
+
+  return true;
+};
+
+const updateIOSProject = (iosPath, pinset) => {
+  try {
+    const iosInfo = plist.parse(fs.readFileSync(iosPath, 'utf8'));
+    let iosDomains = {};
+
+    for (let domain in pinset.domains) {
+      let includeSubdomains = false;
+      let baseDomain = domain;
+      if (domain.startsWith('*.')) {
+        includeSubdomains = true;
+        baseDomain = domain.substring(2);
+      }
+      let iosDomain = {
+        TSKEnforcePinning: true,
+        TSKIncludeSubdomains: includeSubdomains,
+        TSKPublicKeyAlgorithms: ['TSKAlgorithmRsa2048']
+      };
+      pinArray = [];
+      pinset.domains[domain].pins.forEach((pin) => {
+        if (pin.startsWith('sha256/')) {
+          pinArray.push(pin.substring(7));
+        } else {
+          pinArray.push(pin);
+        }
+      });
+      iosDomain['TSKPublicKeyHashes'] = pinArray;
+      iosDomains[baseDomain] = iosDomain;
+    }
+    iosInfo['TSKConfiguration'] = {
+      TSKPinnedDomains: iosDomains,
+      TSKSwizzleNetworkDelegates: true
+    };
+
+    // WRITE OUT FILE HERE
+    fs.writeFileSync(iosPath, plist.build(iosInfo));
+    Log.info(`Updated! (${iosPath})`);
+  } catch (err) {
+    Log.fatal(`iOS plist file '${iosPath}' error: ${err}`);
+  }
+};
+
+const updateAndroidProject = (andPath, pinset) => {
+  try {
+    let andBody = '';
+    for (let domain in pinset.domains) {
+      pinset.domains[domain].pins.forEach((pin) => {
+        andBody += `        builder.add("${domain}", "${pin}");\n`;
+      });
+    }
+
+    const javaFileContent = `package com.criticalblue.reactnative;
 
 import okhttp3.CertificatePinner;
 
 public class GeneratedCertificatePinner {
     public static CertificatePinner instance() {
         CertificatePinner.Builder builder = new CertificatePinner.Builder();
-
-`;
-const andFoot = 
-`
+${andBody}
         return builder.build();
     }
 }
 `;
+    fs.writeFileSync(andPath, javaFileContent);
+    Log.info(`Updated! (${andPath})`);
+  } catch (err) {
+    Log.fatal(`Java file '${andPath}' error: ${err}`);
+  }
+};
 
 module.exports = (args) => {
   // prep config file
-
+  const isForced = !!args.f;
   const count = args._.length;
-  const srcPath = (count > 1)? args._[1] : './pinset.json';
-  if (!fs.existsSync(srcPath)) {
-    Log.fatal(`Missing config file: ${srcPath}`);
+  const configFile = count > 1 ? args._[1] : './pinset.json';
+  if (!fs.existsSync(configFile)) {
+    Log.fatal(`Missing config file: ${configFile}`);
+  }
+
+  // Read and verify config file
+  let pinset = '';
+  try {
+    pinset = JSON.parse(fs.readFileSync(configFile, 'utf8'));
+    if (pinset && !pinset.domains) {
+      Log.fatal('Pinset config is not valid. (No domain found!)');
+    }
+    for (let domain in pinset.domains) {
+      let baseDomain = domain.startsWith('*.') ? domain.substring(2) : domain;
+      if (!isValidDomain(baseDomain)) {
+        Log.fatal(`Invalid domain in config file -> '${baseDomain}'`);
+      }
+
+      if (pinset.domains[domain].pins.length === 0) {
+        Log.fatal(`There is no hash for domain ${baseDomain}`);
+      }
+    }
+  } catch (err) {
+    Log.fatal(`Error on config file '${configFile}'\nError: ${err}`);
   }
 
   // prep android project path
-
-  let andBase = "./android";
-  if (args.a) {
-    if (args.a.length <= 0) {
-      Log.fatal(`Option '-a' missing path to Android project`);
-    }
-    andBase = args.a;
+  if (args.a && args.a.length <= 0) {
+    Log.fatal(`Option '-a' missing path to Android project folder`);
   }
-  const andExists = fs.existsSync(andBase);
-  if (!andExists) {
-    Log.warn(`Android project not found: ${andBase}`);
-  }
-
+  const andBase = args.a || './android';
   const andPath = `${andBase}/app/src/main/java/com/criticalblue/reactnative/GeneratedCertificatePinner.java`;
+  if (!fs.existsSync(andBase)) {
+    Log.fatal(`Android project not found: ${andBase}`);
+  }
+  compareFilesLastModified(configFile, andPath, isForced);
 
   // prep ios project path
-  
-  let iosBase = "./ios";
-  if (args.i) {
-    if (args.i.length <= 0) {
-      Log.fatal(`Option '-i' missing path to iOS project`);
-    }
-    iosBase = args.i;
+  if (args.i && args.i.length <= 0) {
+    Log.fatal(`Option '-i' missing path to iOS project folder`);
   }
-  const iosExists = fs.existsSync(iosBase);
-  if (!iosExists) {
-    Log.warn(`iOS project not found: ${iosBase}`);
+  const iosBase = args.i || './ios';
+  if (!fs.existsSync(iosBase)) {
+    Log.fatal(`iOS project folder not found: ${iosBase}`);
   }
 
-  let iosPath = '';
-  let iosInfo = {};
-  if (iosExists) {
-    const iosXcodeprojs = fs.readdirSync(iosBase).filter(fn => fn.endsWith('.xcodeproj'));
-    if (iosXcodeprojs.length != 1) {
-      Log.fatal('Cannot find unique *.xcodeproj in ${iosBase)');
-    }
-    iosPath = iosBase + '/' + path.basename(iosXcodeprojs[0], '.xcodeproj') + '/info.plist';
-    if (!fs.existsSync(iosPath)) {
-      Log.fatal(`Missing iOS plist file: ${iosPath}`);
-    }
+  const iosXcodeprojs = fs.readdirSync(iosBase).filter((fn) => fn.endsWith('.xcodeproj'));
+  if (iosXcodeprojs.length > 1 && !args.p) {
+    const projects = iosXcodeprojs.map((project) => `\t-p ${project}`);
+    Log.fatal(`Multiple  *.xcodeproj found in ${iosBase}
 
-    iosInfo = plist.parse(fs.readFileSync(iosPath, 'utf8'));
+      For updating all projects use '-p all'
+      Or updating specific one use 
+      ${projects.join('\n')}
+      
+      For more help 'pinset help gen'
+      `);
   }
 
-  // check any projects
-
-  if (!andExists && !iosExists) {
-    Log.fatal('Neither Android nor iOS projects found');
+  if (args.p && args.p.length <= 0) {
+    Log.fatal(`Option '-p' missing iOS project name or 'all'.\n\n More help 'pinset help gen'`);
   }
 
-  // check file ages
-
-  let andUpdate = andExists;
-  if (andUpdate && fs.existsSync(andPath)) {
-    if (fs.statSync(srcPath).mtimeMs < fs.statSync(andPath).mtimeMs) {
-      if (!args.f) {
-        andUpdate = false;
-        Log.warn(`config file'${srcPath}' is older than Android file '${andPath}'; use '-f' to force update.`);
-      }
-    }
+  let iosProjectPaths = [];
+  // Single ios project in folder
+  if (iosXcodeprojs.length == 1) {
+    const path = getIOSProjectPath(iosBase, iosXcodeprojs[0]);
+    iosProjectPaths.push(path);
   }
 
-  let iosUpdate = iosExists;
-  if (iosUpdate && fs.existsSync(iosPath)) {
-    if (fs.statSync(srcPath).mtimeMs < fs.statSync(iosPath).mtimeMs) {
-      if (!args.f) {
-        iosUpdate = false;
-        Log.warn(`config file'${srcPath}' is older than iOS file '${iosPath}'; use '-f' to force update.`);
-      }
-    }
+  // Specific ios project provided by -p
+  if (args.p !== 'all' && !Array.isArray(args.p)) {
+    const path = getIOSProjectPath(iosBase, String(args.p).replace('.xcodeproj', ''));
+    iosProjectPaths.push(path);
   }
 
-  if (!andUpdate && !iosUpdate) {
-    Log.warn('No files updated');
-    return;
+  // Specific ios projects provided by multiple -p
+  if (args.p !== 'all' && Array.isArray(args.p)) {
+    const paths = args.p.map((project) =>
+      getIOSProjectPath(iosBase, String(project).replace('.xcodeproj', ''))
+    );
+    iosProjectPaths = paths;
   }
 
-  // read pinset config
-
-  let pinset = '';
-  try {
-    pinset = JSON.parse(fs.readFileSync(srcPath, 'utf8'));
-  } catch (err) {
-    Log.fatal(`Config file '${srcPath}' error: ${err}`);
+  // All ios projects
+  if (args.p === 'all') {
+    const paths = iosXcodeprojs.map((project) => getIOSProjectPath(iosBase, project));
+    iosProjectPaths = paths;
   }
 
-  Log.info(`Reading config file '${srcPath}'.`);
+  // Check project file(s) last modify
+  iosProjectPaths.forEach((project) => compareFilesLastModified(configFile, project, isForced));
 
   // write android config
-
-  if (andUpdate) {
-    Log.info(`Updating java file '${andPath}'.`);
-
-    try {
-      let andBody = '';
-      for (let domain in pinset.domains) {
-        pinset.domains[domain].pins.forEach((pin) => {
-          andBody += `        builder.add("${domain}", "${pin}");\n`;
-        });
-      }
-      fs.writeFileSync(andPath, andHead + andBody + andFoot);
-    } catch(err) {
-      Log.fatal(`Java file '${andPath}' error: ${err}`);
-    }
-  }
+  updateAndroidProject(andPath, pinset);
 
   // write ios config
-
-  if (iosUpdate) {    
-    Log.info(`Updating plist file '${iosPath}'.`);
-
-    try {
-      let iosDomains = {};
-      for (let domain in pinset.domains) {
-        let includeSubdomains = false;
-        let baseDomain = domain;
-        if (domain.startsWith('*.')) {
-          includeSubdomains = true;
-          baseDomain = domain.substring(2);
-        }
-        let iosDomain = { 
-          TSKEnforcePinning: true,
-          TSKIncludeSubdomains: includeSubdomains,
-          TSKPublicKeyAlgorithms: ['TSKAlgorithmRsa2048'],
-        };
-        pinArray = [];
-        pinset.domains[domain].pins.forEach((pin) => {
-          if (pin.startsWith('sha256/')) {
-            pinArray.push(pin.substring(7));
-          } else {
-            pinArray.push(pin);
-          }
-        });
-        iosDomain['TSKPublicKeyHashes'] = pinArray;
-        iosDomains[baseDomain] = iosDomain;
-      }
-      iosInfo['TSKConfiguration'] = {
-        'TSKPinnedDomains': iosDomains,
-        'TSKSwizzleNetworkDelegates': true
-      }
-
-      // WRITE OUT FILE HERE
-      fs.writeFileSync(iosPath, plist.build(iosInfo));
-    } catch(err) {
-      Log.fatal(`iOS plist file '${iosPath}' error: ${err}`);
-    }
-  }
-}
+  iosProjectPaths.forEach((project) => updateIOSProject(project, pinset));
+};
